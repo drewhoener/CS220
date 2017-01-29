@@ -51,7 +51,7 @@ class BankAccountsManager:
 if __name__ == '__main__':
     manager = BankAccountsManager()
     for i in range(0, 10):
-        manager.add_account(i, "Test_Account")
+        manager.add_account(i, "Test_Account_" + str(i))
     for i in range(0, 10):
         manager.make_deposit(i, 50)
         if i < 9:
