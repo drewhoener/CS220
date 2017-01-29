@@ -5,8 +5,8 @@ class BankAccountsManager:
     def __init__(self):
         self.accounts = []
 
-    def add_account(self, par1_id, par2_name):
-        account = BankAccount(par1_id, par2_name, 0.00)
+    def add_account(self, par1_id, par2_name, par3_balance=0.00):
+        account = BankAccount(par1_id, par2_name, par3_balance)
         self.accounts.append(account)
 
     def get_account(self, par1_id):
