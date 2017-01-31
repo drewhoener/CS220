@@ -1,4 +1,4 @@
-from BankAccount import BankAccount
+from bankaccount import BankAccount
 
 
 class BankAccountsManager:
@@ -21,32 +21,31 @@ class BankAccountsManager:
         if account is None:
             raise Exception("Account Not Found!")
         else:
-            getattr(account, 'deposit')(par2_amount)
+            account.deposit(par2_amount)
 
     def make_withdrawl(self, par1_id, par2_amount):
         account = self.get_account(par1_id)
         if account is None:
             raise Exception("Account Not Found!")
         else:
-            getattr(account, 'withdraw')(par2_amount)
+            account.withdraw(par2_amount)
 
     def get_balance(self, par1_id):
         account = self.get_account(par1_id)
         if account is None:
             raise Exception("Account Not Found!")
         else:
-            return getattr(account, 'get_balance')
+            return account.get_balance()
 
     def get_account_report(self, par1_id):
         account = self.get_account(par1_id)
         if account is None:
             raise Exception("Account Not Found!")
         else:
-            acc_id = getattr(account, 'id')
-            acc_name = getattr(account, 'name')
-            acc_bal = getattr(account, 'balance')
+            acc_id = account.id
+            acc_name = account.name
+            acc_bal = account.balance
             return "ID: %d\nName: %s\nBalance: %.2f\n" % (acc_id, acc_name, acc_bal)
-
 
 if __name__ == '__main__':
     manager = BankAccountsManager()
