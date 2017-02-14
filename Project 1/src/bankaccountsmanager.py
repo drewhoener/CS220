@@ -47,6 +47,10 @@ class BankAccountsManager:
             acc_bal = account.balance
             return "ID: %d\nName: %s\nBalance: %.2f\n" % (acc_id, acc_name, acc_bal)
 
+
+def squr(num):
+    return num * num
+
 if __name__ == '__main__':
     manager = BankAccountsManager()
     for i in range(0, 10):
@@ -58,3 +62,5 @@ if __name__ == '__main__':
             print(manager.get_account_report(i))
     manager.make_withdrawl(9, 20)
     print(manager.get_account_report(9))
+
+    print(squr(5.0))
