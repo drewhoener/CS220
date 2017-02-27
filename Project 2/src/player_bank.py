@@ -21,7 +21,8 @@ class PlayerBank:
         if amount > self._balance:
             raise RuntimeError("Bet is greater than Balance!")
         self._bets_placed = amount
+        self._balance -= amount
 
     def __str__(self):
         state = "winner!" if self._is_winner else "bust."
-        return "bet %.2f\tbalance %.2f\t%s" % (self._bets_placed, self._balance, state)
+        return "bet %.2f balance %.2f %s" % (self._bets_placed, self._balance, state)

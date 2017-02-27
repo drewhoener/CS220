@@ -29,7 +29,8 @@ class Hand:
             elif list('JQK').__contains__(card.rank):
                 score += 10
             else:
-                score += card.rank
+                score += int(card.rank)
+        self._score = score
         return score
 
     def __len__(self):
@@ -38,5 +39,5 @@ class Hand:
     def __str__(self):
         string = ""
         for card in self._cards:
-            string += str(card) + " "
-        return string
+            string += "Card(rank=\'" + card.rank + "\', suit=\'" + card.suit + "\') "
+        return string.strip()
