@@ -18,7 +18,6 @@ def eval_tree(tree):
         val = eval_node(node, genv)
         result = val[0]
         genv = val[1]
-
     return result
 
 
@@ -38,64 +37,83 @@ def eval_node(node, env):
     global genv
     global result
     node_type = node_name(node)
+
     if node_type == 'Expr':
         return eval_node(node.value, env)
     elif node_type == 'Assign':
-        # extract the variable name, evaluate the RHS, then extend the environment.
         name = node.targets[0].id
-        val_obj = eval_node(node.value, env)
-        env = val_obj[1]
-        val_result = val_obj[0][0] if val_obj[0] is tuple else val_obj[0]
-        return 0, env.extend([name], [val_result])
+        val = eval_node(node.value, env)
+
+        while type(val) is tuple and len(val) == 2 and (type(val[1]) == GlobalEnv or type(val[1]) == LocalEnv):
+            val = val[0]
+
+        new_env = env.extend([name], [val])
+
+        # extract the variable name, evaluate the RHS, then extend the environment.
+        return 0, new_env
     elif node_type == 'BinOp':
         # get the left and right operands (we use only single operands) and the operator.
         # evaluate the operands and apply the operator. return the number, env.
+
         left = eval_node(node.left, env)[0]
         right = eval_node(node.right, env)[0]
+
+        if type(left) is tuple:
+            left = left[0]
+
+        if type(right) is tuple:
+            right = right[0]
+
         op = node_name(node.op)
 
-        if op == "Add":
-            return left + right, env
-        elif op == "Sub":
-            return left - right, env
-        elif op == "Mult":
-            return left * right, env
-        elif op == "Div":
-            return left / right, env
-        elif op == "Mod":
-            return left % right, env
-
+        if (op == "Add"):
+            return (left + right), env
+        elif (op == "Sub"):
+            return (left - right), env
+        elif (op == "Mult"):
+            return (left * right), env
+        elif (op == "Div"):
+            return (left / right), env
+        elif (op == "Mod"):
+            return (left % right), env
         return 0, env
     elif node_type == 'FunctionDef':
         # need the function id (name), args, and body. Extend the environment.
         # you can leave the args wrapped in the ast class and the body and unpack them
         # when the function is called.
 
-        return 0, env.extend([node.name], [[node.args, node.body]])
+        name = node.name
+        new_env = env.extend([name], [(node.args, node.body)])
+
+        return 0, new_env
     elif node_type == 'Call':
         # get any values passed in to the function from the Call object.
         # get the fxn name and look up its parameters, if any, and body from the env.
         # get lists for parameter names and values and extend a LocalEnv with those bindings.
         # evaluate the body in the local env, return the value, env.
-        func = env.lookup(node.func.id)
+
+        func = eval_node(node.func, env)[0]
         local = LocalEnv(None, env)
+
+        args = func[0].args
+        body = func[1]
 
         index = 0
         for val in node.args:
-            local = local.extend([func[0].args[index].arg], [eval_node(val, local)[0]])
+            local = local.extend([args[index].arg], [eval_node(val, local)[0]])
             index += 1
 
-        print("VAL: " + str(local.lookup("f")))
+        result
+        for node in body:
+            val = eval_node(node, local)
 
-        result = 0
-        for body_node in func[1]:
-            val = eval_node(body_node, local)
-            result = val[0]
+            if node_name(node) == "Return":
+                result = val[0]
             local = val[1]
         return result, env
     elif node_type == 'Return':
         # evaluate the node, return the value, env.
-        return eval_node(node.value, env), env
+        return eval_node(node.value, env)
     elif node_type == 'Name':
         # Name(identifier id)- lookup the value binding in the env
         # return the value, env

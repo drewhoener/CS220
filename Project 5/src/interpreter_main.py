@@ -107,6 +107,16 @@ res = f_to_celsius(420)
 res
 """
 
+expr15 = """
+def foo():
+    def bar(x):
+        return 20 + x
+    return bar
+res = foo()
+z = res(3)
+z
+"""
+
 ## c = 0
 ##def add_c():
 ##  c = c + 1
@@ -118,7 +128,7 @@ if __name__ == '__main__':
     import ast
     import interpreter
 
-    tree = ast.parse(expr8)
+    tree = ast.parse(expr15)
 
     expr_val = interpreter.eval_tree(tree)
     print(expr_val)
