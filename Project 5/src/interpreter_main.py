@@ -44,6 +44,7 @@ def f_to_celsius(f):
 
 ftemp = 68
 res = f_to_celsius(ftemp)
+res
 """
 
 expr9 = """
@@ -97,10 +98,27 @@ res = foo()(3)
 res
 """
 
+expr14 = """
+def f_to_celsius(f):
+    c = (f - 32) * (5/9)
+    return c
+
+res = f_to_celsius(420)
+res
+"""
+
+## c = 0
+##def add_c():
+##  c = c + 1
+##
+##
+##
+
 if __name__ == '__main__':
     import ast
     import interpreter
 
-    tree = ast.parse(expr1)
+    tree = ast.parse(expr8)
+
     expr_val = interpreter.eval_tree(tree)
     print(expr_val)
