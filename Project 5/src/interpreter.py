@@ -41,16 +41,13 @@ def eval_node(node, env):
     if node_type == 'Expr':
         return eval_node(node.value, env)
     elif node_type == 'Assign':
-        name = node.targets[0].id
         val = eval_node(node.value, env)
 
         while type(val) is tuple and len(val) == 2 and (type(val[1]) == GlobalEnv or type(val[1]) == LocalEnv):
             val = val[0]
 
-        new_env = env.extend([name], [val])
-
         # extract the variable name, evaluate the RHS, then extend the environment.
-        return 0, new_env
+        return 0, env.extend([node.targets[0].id], [val])
     elif node_type == 'BinOp':
         # get the left and right operands (we use only single operands) and the operator.
         # evaluate the operands and apply the operator. return the number, env.
@@ -58,23 +55,20 @@ def eval_node(node, env):
         left = eval_node(node.left, env)[0]
         right = eval_node(node.right, env)[0]
 
-        if type(left) is tuple:
-            left = left[0]
-
-        if type(right) is tuple:
-            right = right[0]
+        left = left[0] if type(left) is tuple else left
+        right = right[0] if type(right) is tuple else right
 
         op = node_name(node.op)
 
-        if (op == "Add"):
+        if op == "Add":
             return (left + right), env
-        elif (op == "Sub"):
+        elif op == "Sub":
             return (left - right), env
-        elif (op == "Mult"):
+        elif op == "Mult":
             return (left * right), env
-        elif (op == "Div"):
+        elif op == "Div":
             return (left / right), env
-        elif (op == "Mod"):
+        elif op == "Mod":
             return (left % right), env
         return 0, env
     elif node_type == 'FunctionDef':
@@ -82,10 +76,7 @@ def eval_node(node, env):
         # you can leave the args wrapped in the ast class and the body and unpack them
         # when the function is called.
 
-        name = node.name
-        new_env = env.extend([name], [(node.args, node.body)])
-
-        return 0, new_env
+        return 0, env.extend([node.name], [(node.args, node.body)])
     elif node_type == 'Call':
         # get any values passed in to the function from the Call object.
         # get the fxn name and look up its parameters, if any, and body from the env.
@@ -93,24 +84,23 @@ def eval_node(node, env):
         # evaluate the body in the local env, return the value, env.
 
         func = eval_node(node.func, env)[0]
-        local = LocalEnv(None, env)
+        local_env = LocalEnv(None, env)
 
         args = func[0].args
         body = func[1]
 
         index = 0
         for val in node.args:
-            local = local.extend([args[index].arg], [eval_node(val, local)[0]])
+            local_env = local_env.extend([args[index].arg], [eval_node(val, local_env)[0]])
             index += 1
 
-        result
         for node in body:
-            val = eval_node(node, local)
+            val = eval_node(node, local_env)
 
             if node_name(node) == "Return":
-                result = val[0]
-            local = val[1]
-        return result, env
+                output_val = val[0]
+            local_env = val[1]
+        return output_val, env
     elif node_type == 'Return':
         # evaluate the node, return the value, env.
         return eval_node(node.value, env)
